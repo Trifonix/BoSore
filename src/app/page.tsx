@@ -8,11 +8,24 @@ export default async function HomePage() {
   });
 
   return (
-    <main>
-      <h1>BoSore</h1>
-      <p className="subtitle">
-        Описания книг и статей с оформлением по ГОСТ для списка литературы
-      </p>
+    <div className="page">
+      <header className="header">
+        <h1 className="logo">BoSore</h1>
+        <p className="subtitle">
+          Описания книг и статей с оформлением по ГОСТ для списка литературы
+        </p>
+        {items.length > 0 && (
+          <span className="badge">
+            <span className="badge-dot" />
+            {items.length}{" "}
+            {items.length === 1
+              ? "источник"
+              : items.length < 5
+                ? "источника"
+                : "источников"}
+          </span>
+        )}
+      </header>
 
       {items.length === 0 ? (
         <p className="empty">
@@ -25,7 +38,7 @@ export default async function HomePage() {
             <li key={item.id} className="item">
               <p className="item-summary">{item.title}</p>
               <p className="item-gost">
-                <span className="item-gost-label">По ГОСТ:</span>{" "}
+                <span className="item-gost-label">По ГОСТ</span>
                 {item.description}
               </p>
               <time dateTime={item.createdAt.toISOString()}>
@@ -39,6 +52,6 @@ export default async function HomePage() {
           ))}
         </ul>
       )}
-    </main>
+    </div>
   );
 }

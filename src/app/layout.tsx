@@ -1,5 +1,18 @@
 import type { Metadata } from "next";
+import { Orbitron, Exo_2 } from "next/font/google";
 import "./globals.css";
+
+const display = Orbitron({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["600", "700"],
+});
+
+const body = Exo_2({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-body",
+  weight: ["400", "500", "600"],
+});
 
 export const metadata: Metadata = {
   title: "BoSore — Books Sources Store",
@@ -13,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru">
+    <html lang="ru" className={`${display.variable} ${body.variable}`}>
       <body>{children}</body>
     </html>
   );
