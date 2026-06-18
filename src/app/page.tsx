@@ -23,8 +23,11 @@ export default async function HomePage() {
         <ul className="list">
           {items.map((item) => (
             <li key={item.id} className="item">
-              <h2>{item.title}</h2>
-              <p>{item.description}</p>
+              <p className="item-summary">{item.title}</p>
+              <p className="item-gost">
+                <span className="item-gost-label">По ГОСТ:</span>{" "}
+                {item.description}
+              </p>
               <time dateTime={item.createdAt.toISOString()}>
                 {item.createdAt.toLocaleDateString("ru-RU", {
                   day: "numeric",

@@ -9,7 +9,7 @@ datasource db {
 
 model Item {
   id          String   @id @default(uuid()) @db.Uuid
-  title       String
-  description String
+  title       String // описание книги / статьи (не название)
+  description String // оформление источника по ГОСТ (название уже внутри)
   createdAt   DateTime @default(now())
 }
