@@ -9,9 +9,13 @@ async function main() {
     create: { email: "seed@bosore.test", name: "Seed User" },
   });
 
-  const category =
+  const booksCategory =
     (await prisma.category.findFirst({ where: { category: "Книги" } })) ??
     (await prisma.category.create({ data: { category: "Книги" } }));
+
+  const articlesCategory =
+    (await prisma.category.findFirst({ where: { category: "Статьи" } })) ??
+    (await prisma.category.create({ data: { category: "Статьи" } }));
 
   await prisma.source.deleteMany({ where: { ownerId: user.id } });
 
@@ -19,8 +23,8 @@ async function main() {
     data: [
       {
         ownerId: user.id,
-        categoryId: category.id,
-        title: "SICP",
+        categoryId: booksCategory.id,
+        title: "sicp",
         content:
           "Фундаментальный учебник по программированию: абстракция данных, интерпретация языков и построение интерпретаторов на примере Scheme.",
         description:
@@ -30,8 +34,8 @@ async function main() {
       },
       {
         ownerId: user.id,
-        categoryId: category.id,
-        title: "Clean Code",
+        categoryId: booksCategory.id,
+        title: "clean-code",
         content:
           "Практическое руководство по написанию читаемого и поддерживаемого кода: именование, функции, тестирование и рефакторинг.",
         description:
@@ -39,8 +43,21 @@ async function main() {
         visibility: Visibility.PUBLIC,
         publishedAt: new Date(),
       },
+      {
+        ownerId: user.id,
+        categoryId: articlesCategory.id,
+        title: "nextjs-docs",
+        content:
+          "Официальная документация по маршрутизации, серверным компонентам и развёртыванию приложений на Next.js App Router.",
+        description:
+          "Next.js Documentation [Электронный ресурс]. — Режим доступа: https://nextjs.org/docs (дата обращения: 18.06.2026).",
+        visibility: Visibility.PUBLIC,
+        publishedAt: new Date(),
+      },
     ],
   });
+
+  console.log("OK: 3 публичных источника созданы (2 книги, 1 статья)");
 }
 
 main()

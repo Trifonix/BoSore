@@ -104,3 +104,20 @@ scripts/
 | `npm run db:seed`    | Заполнение тестовыми источниками |
 | `npm run db:verify`  | Проверка схемы БД               |
 | `npm run db:studio`  | Prisma Studio                   |
+| `npm run view-db`    | Просмотр БД (порт 3001)         |
+
+## view-db
+
+Тестовая утилита для просмотра и редактирования таблиц PostgreSQL.
+
+```bash
+npm run view-db
+```
+
+Откройте [http://localhost:3001/view-db](http://localhost:3001/view-db).
+
+1. Выберите **локальную** (`DATABASE_URL`) или **рабочую** (`DATABASE_URL_PROD`) БД.
+2. Нажмите **Подключиться** — появится список таблиц.
+3. Нажмите **Открыть** — таблица с пагинацией и кнопками Create / Edit / Delete.
+
+На production доступна только при `VIEW_DB_ENABLED=1`.

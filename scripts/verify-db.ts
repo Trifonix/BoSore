@@ -28,8 +28,7 @@ async function main() {
         "Учебное пособие для проверки схемы БД: основы библиографического описания источников.",
       description:
         "Иванов И.И. Тестовая книга / И.И. Иванов. — М.: Издательство, 2024. — 100 с.",
-      visibility: Visibility.PUBLIC,
-      publishedAt: new Date(),
+      visibility: Visibility.PRIVATE,
       categoryId: category.id,
       ownerId: user.id,
     },
@@ -42,8 +41,7 @@ async function main() {
         "Учебное пособие для проверки схемы БД: основы библиографического описания источников.",
       description:
         "Иванов И.И. Тестовая книга / И.И. Иванов. — М.: Издательство, 2024. — 100 с.",
-      visibility: Visibility.PUBLIC,
-      publishedAt: new Date(),
+      visibility: Visibility.PRIVATE,
     },
   });
 
