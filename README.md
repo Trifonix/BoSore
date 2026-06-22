@@ -71,23 +71,27 @@ DATABASE_URL="postgresql://..." npm run db:seed
 ```
 src/
   app/
-    page.tsx      # главная страница, читает Item из БД
+    page.tsx      # главная страница, публичные Source из БД
     layout.tsx
   lib/
     prisma.ts     # singleton Prisma Client
 prisma/
-  schema.prisma   # модель Item
-  seed.ts         # тестовые записи
+  schema.prisma   # модели User, Source, Vote и др.
+  seed.ts         # тестовые источники
+scripts/
+  verify-db.ts    # проверка: пользователь, источник, голос
 ```
 
-## Модель Item
+## Модель Source (источник)
 
 | Поле        | Тип      | Описание                                      |
 |-------------|----------|-----------------------------------------------|
-| id          | UUID     | Первичный ключ                                |
-| title       | String   | Описание книги / статьи                       |
-| description | String   | Оформление источника по ГОСТ                   |
-| createdAt   | DateTime | Дата создания                                 |
+| content     | String   | Описание книги / статьи                       |
+| description | String?  | Оформление источника по ГОСТ                   |
+| visibility  | Enum     | PRIVATE / PUBLIC                              |
+| title       | String   | Краткая метка записи в системе                |
+
+Подробнее — в [DATABASE.md](./DATABASE.md).
 
 ## Полезные команды
 
@@ -97,5 +101,6 @@ prisma/
 | `npm run build`      | Сборка (Vercel)                 |
 | `npm run db:migrate` | Миграция (dev)                  |
 | `npm run db:deploy`  | Миграция (production)           |
-| `npm run db:seed`    | Заполнение тестовыми данными    |
+| `npm run db:seed`    | Заполнение тестовыми источниками |
+| `npm run db:verify`  | Проверка схемы БД               |
 | `npm run db:studio`  | Prisma Studio                   |

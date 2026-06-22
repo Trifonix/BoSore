@@ -3,8 +3,12 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const items = await prisma.item.findMany({
+  const sources = await prisma.source.findMany({
+    where: { visibility: "PUBLIC" },
     orderBy: { createdAt: "desc" },
+    include: {
+      _count: { select: { votes: true } },
+    },
   });
 
   return (
@@ -14,39 +18,44 @@ export default async function HomePage() {
         <p className="subtitle">
           Описания книг и статей с оформлением по ГОСТ для списка литературы
         </p>
-        {items.length > 0 && (
+        {sources.length > 0 && (
           <span className="badge">
             <span className="badge-dot" />
-            {items.length}{" "}
-            {items.length === 1
+            {sources.length}{" "}
+            {sources.length === 1
               ? "источник"
-              : items.length < 5
+              : sources.length < 5
                 ? "источника"
                 : "источников"}
           </span>
         )}
       </header>
 
-      {items.length === 0 ? (
+      {sources.length === 0 ? (
         <p className="empty">
-          Записей пока нет. Выполните миграцию и seed:{" "}
-          <code>npm run db:migrate</code>, затем <code>npm run db:seed</code>.
+          Публичных источников пока нет. Выполните{" "}
+          <code>npm run db:verify</code> для проверки схемы.
         </p>
       ) : (
         <ul className="list">
-          {items.map((item) => (
-            <li key={item.id} className="item">
-              <p className="item-summary">{item.title}</p>
-              <p className="item-gost">
-                <span className="item-gost-label">По ГОСТ</span>
-                {item.description}
-              </p>
-              <time dateTime={item.createdAt.toISOString()}>
-                {item.createdAt.toLocaleDateString("ru-RU", {
+          {sources.map((source) => (
+            <li key={source.id} className="item">
+              <p className="item-summary">{source.content}</p>
+              {source.description && (
+                <p className="item-gost">
+                  <span className="item-gost-label">По ГОСТ</span>
+                  {source.description}
+                </p>
+              )}
+              <time dateTime={source.createdAt.toISOString()}>
+                {source.createdAt.toLocaleDateString("ru-RU", {
                   day: "numeric",
                   month: "long",
                   year: "numeric",
                 })}
+                {" · "}
+                {source._count.votes}{" "}
+                {source._count.votes === 1 ? "голос" : "голосов"}
               </time>
             </li>
           ))}

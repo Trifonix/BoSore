@@ -1,29 +1,43 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Visibility } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.item.deleteMany();
+  const user = await prisma.user.upsert({
+    where: { email: "seed@bosore.test" },
+    update: {},
+    create: { email: "seed@bosore.test", name: "Seed User" },
+  });
 
-  await prisma.item.createMany({
+  const category =
+    (await prisma.category.findFirst({ where: { category: "Книги" } })) ??
+    (await prisma.category.create({ data: { category: "Книги" } }));
+
+  await prisma.source.deleteMany({ where: { ownerId: user.id } });
+
+  await prisma.source.createMany({
     data: [
       {
-        title:
+        ownerId: user.id,
+        categoryId: category.id,
+        title: "SICP",
+        content:
           "Фундаментальный учебник по программированию: абстракция данных, интерпретация языков и построение интерпретаторов на примере Scheme.",
         description:
           "Абельсон Х., Сассман Д. Структура и интерпретация компьютерных программ / Х. Абельсон, Д. Сассман. — 2-е изд. — М.: Диалектика, 2019. — 608 с.",
+        visibility: Visibility.PUBLIC,
+        publishedAt: new Date(),
       },
       {
-        title:
+        ownerId: user.id,
+        categoryId: category.id,
+        title: "Clean Code",
+        content:
           "Практическое руководство по написанию читаемого и поддерживаемого кода: именование, функции, тестирование и рефакторинг.",
         description:
           "Мартин Р. Чистый код: создание, анализ и рефакторинг / Р. Мартин; пер. с англ. — СПб.: Питер, 2020. — 464 с.",
-      },
-      {
-        title:
-          "Официальная документация по маршрутизации, серверным компонентам и развёртыванию приложений на Next.js App Router.",
-        description:
-          "Next.js Documentation [Электронный ресурс]. — Режим доступа: https://nextjs.org/docs (дата обращения: 18.06.2026).",
+        visibility: Visibility.PUBLIC,
+        publishedAt: new Date(),
       },
     ],
   });

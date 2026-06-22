@@ -7,9 +7,79 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Item {
-  id          String   @id @default(uuid()) @db.Uuid
-  title       String // описание книги / статьи (не название)
-  description String // оформление источника по ГОСТ (название уже внутри)
-  createdAt   DateTime @default(now())
+enum Visibility {
+  PRIVATE
+  PUBLIC
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  notes   Note[]
+  sources Source[]
+  votes   Vote[]
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  ownerId   String
+  title     String
+  createdAt DateTime @default(now())
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+}
+
+model Category {
+  id       String @id @default(cuid())
+  category String
+
+  sources Source[]
+}
+
+model Source {
+  id          String     @id @default(cuid())
+  ownerId     String
+  title       String // краткая метка записи в системе
+  content     String // описание книги / статьи
+  description String? // оформление источника по ГОСТ (название уже внутри)
+  categoryId  String
+  visibility  Visibility @default(PRIVATE)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  publishedAt DateTime?
+
+  owner    User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  votes    Vote[]
+  tags     Tag[]
+
+  @@index([ownerId, updatedAt])
+  @@index([visibility, createdAt])
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+
+  sources Source[]
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  userId    String
+  sourceId  String
+  value     Int      @default(1)
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sourceId])
+  @@index([sourceId])
+  @@index([userId])
 }
