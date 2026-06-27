@@ -26,14 +26,14 @@ BoSore использует **Auth.js** с OAuth-провайдером **Google
 2. Нажмите **Create Credentials → OAuth client ID**.
 3. Application type: **Web application**.
 4. Name: `BoSore Web` (любое понятное имя).
-5. **Authorized JavaScript origins** (опционально, для локальной разработки):
+5. **Authorized JavaScript origins**:
    ```
-   http://localhost:3000
+   http://localhost:3001
    https://YOUR_DOMAIN.vercel.app
    ```
-6. **Authorized redirect URIs** — обязательно:
+6. **Authorized redirect URIs** — обязательно (добавьте **оба**, если работаете локально и на Vercel):
    ```
-   http://localhost:3000/api/auth/callback/google
+   http://localhost:3001/api/auth/callback/google
    https://YOUR_DOMAIN.vercel.app/api/auth/callback/google
    ```
 7. Нажмите **Create**.
@@ -54,8 +54,8 @@ DATABASE_URL="postgresql://USER:PASSWORD@HOST/DBNAME?sslmode=require"
 # Сгенерировать: openssl rand -base64 32
 AUTH_SECRET="your-auth-secret"
 
-# URL приложения
-AUTH_URL="http://localhost:3000"
+# URL приложения — только для локальной разработки
+AUTH_URL="http://localhost:3001"
 
 # Google OAuth (из шага 3)
 GOOGLE_CLIENT_ID="123456789-abc.apps.googleusercontent.com"
@@ -64,7 +64,13 @@ GOOGLE_CLIENT_SECRET="GOCSPX-..."
 
 ### Production (Vercel)
 
-В **Settings → Environment Variables** добавьте те же переменные:
+> **Важно:** на Vercel `AUTH_URL` — это **домен Vercel**, не localhost!
+> ```
+> AUTH_URL=https://your-domain.vercel.app
+> ```
+> Если указать `http://localhost:3001` на Vercel — OAuth после Google всегда падает с `error=Configuration`.
+
+В **Settings → Environment Variables** добавьте:
 
 | Переменная | Пример |
 |------------|--------|
@@ -93,7 +99,7 @@ npm run db:deploy
 npm run dev
 ```
 
-1. Откройте [http://localhost:3000/login](http://localhost:3000/login).
+1. Откройте [http://localhost:3001/login](http://localhost:3001/login) (порт = ваш `AUTH_URL`).
 2. Нажмите **Войти через Google**.
 3. После входа — редирект на `/dashboard`.
 4. В БД появится запись в `User` и `Session`.
@@ -109,9 +115,10 @@ npm run dev
 ## Частые проблемы
 
 **Server error / `error=Configuration` после Google**  
-1. Очистите cookies для `localhost` в браузере.  
-2. `AUTH_URL` должен совпадать с портом dev-сервера (`http://localhost:3000`). Если порт занят и Next.js стартует на 3001 — либо освободите 3000, либо обновите `AUTH_URL`.  
-3. Перезапустите `npm run dev` и войдите снова через кнопку на `/login`.
+1. **Vercel:** `AUTH_URL` должен быть `https://ваш-домен.vercel.app`, не localhost.  
+2. **Google Console:** redirect URI = `{AUTH_URL}/api/auth/callback/google` (порт и протокол точь-в-точь).  
+3. Очистите cookies для `localhost` и перезапустите `npm run dev`.  
+4. Вход — только через кнопку на `/login` (POST + CSRF, не прямой GET-URL).
 
 **`redirect_uri_mismatch`**  
 Redirect URI в Google Console не совпадает с фактическим URL callback. Проверьте `AUTH_URL` и URI в credentials.

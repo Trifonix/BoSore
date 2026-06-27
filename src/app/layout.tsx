@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Orbitron, Exo_2 } from "next/font/google";
-import { AuthProvider } from "@/components/AuthProvider";
 import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
 
@@ -30,10 +29,8 @@ export default function RootLayout({
   return (
     <html lang="ru" className={`${display.variable} ${body.variable}`}>
       <body>
-        <AuthProvider>
-          <SiteHeader />
-          {children}
-        </AuthProvider>
+        <SiteHeader />
+        {children}
       </body>
     </html>
   );
