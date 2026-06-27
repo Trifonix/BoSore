@@ -4,22 +4,9 @@
 
 Стек: **Next.js (App Router)** + **Auth.js** + **Prisma** + **NeonDB (PostgreSQL)**. Деплой: **Vercel**.
 
-## Аутентификация (Google OAuth)
+## Аутентификация
 
-1. Создайте OAuth Client в [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
-2. Authorized redirect URI:
-   - локально: `http://localhost:3000/api/auth/callback/google`
-   - production: `https://YOUR_DOMAIN/api/auth/callback/google`
-3. Добавьте в `.env`:
-
-```env
-AUTH_SECRET="..."          # openssl rand -base64 32
-AUTH_URL="http://localhost:3000"
-GOOGLE_CLIENT_ID="..."
-GOOGLE_CLIENT_SECRET="..."
-```
-
-4. Примените миграцию auth: `npm run db:deploy`
+Google OAuth через Auth.js. Пошаговая настройка Client ID, переменных окружения и redirect URI — в [AUTH_SETUP.md](./AUTH_SETUP.md).
 
 **Маршруты:**
 - `/login` — вход через Google
@@ -73,12 +60,7 @@ npm run dev
 
 1. Залейте репозиторий на GitHub.
 2. Импортируйте проект в [Vercel](https://vercel.com).
-3. В **Settings → Environment Variables** добавьте:
-   - `DATABASE_URL`
-   - `AUTH_SECRET`
-   - `AUTH_URL` (https://your-domain.vercel.app)
-   - `GOOGLE_CLIENT_ID`
-   - `GOOGLE_CLIENT_SECRET`
+3. В **Settings → Environment Variables** добавьте переменные из [AUTH_SETUP.md](./AUTH_SETUP.md) (`DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`).
 4. Деплой. Скрипт `build` автоматически выполнит `prisma generate`.
 
 ### Миграции на production
