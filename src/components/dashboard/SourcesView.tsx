@@ -57,8 +57,8 @@ export function SourcesView({
     <>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Личный кабинет</h1>
-          <h2 className="mt-1 text-lg text-muted-foreground">{subtitle}</h2>
+          <h1 className="dashboard-heading">Личный кабинет</h1>
+          <h2 className="dashboard-subtitle">{subtitle}</h2>
         </div>
         {showCreate && (
           <Button
@@ -78,8 +78,8 @@ export function SourcesView({
       </div>
 
       {data.items.length === 0 ? (
-        <div className="rounded-xl border border-dashed bg-muted/30 px-6 py-12 text-center">
-          <p className="text-muted-foreground">{emptyMessage}</p>
+        <div className="dashboard-empty">
+          <p>{emptyMessage}</p>
           {showCreate && (
             <Button
               className="mt-4"

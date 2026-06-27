@@ -10,12 +10,12 @@ export default async function DashboardLayout({
   const session = await requireAuth();
 
   return (
-    <div className="dashboard-layout-marker flex min-h-screen bg-white text-foreground">
+    <div className="dashboard-layout-marker dashboard-shell flex min-h-screen">
       <DashboardSidebar
         userName={formatDisplayName(session.user.name, session.user.email)}
         userImage={session.user.image}
       />
-      <main className="flex-1 overflow-auto px-8 py-8">{children}</main>
+      <main className="dashboard-main">{children}</main>
     </div>
   );
 }

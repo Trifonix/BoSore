@@ -53,20 +53,17 @@ export function SourceCard({
 
   return (
     <article
-      className={cn(
-        "flex items-start gap-4 rounded-xl border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md",
-        isPending && "opacity-70",
-      )}
+      className={cn("dashboard-card", isPending && "opacity-70 pointer-events-none")}
     >
-      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
+      <div className="dashboard-card-icon">
         <MessageSquare className="h-4 w-4" />
       </div>
 
       <div className="min-w-0 flex-1">
-        <h3 className="font-semibold text-slate-800">{local.title}</h3>
-        <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{preview}</p>
+        <h3 className="dashboard-card-title">{local.title}</h3>
+        <p className="dashboard-card-preview">{preview}</p>
         {!isOwner && local.ownerName && (
-          <p className="mt-1 text-xs text-muted-foreground">Автор: {local.ownerName}</p>
+          <p className="dashboard-card-meta">Автор: {local.ownerName}</p>
         )}
       </div>
 
@@ -86,7 +83,7 @@ export function SourceCard({
               className={cn(
                 "h-4 w-4",
                 local.isFavorite
-                  ? "fill-amber-400 text-amber-400"
+                  ? "fill-[var(--neon-magenta)] text-[var(--neon-magenta)] drop-shadow-[0_0_6px_rgba(255,45,149,0.6)]"
                   : "text-muted-foreground",
               )}
             />
@@ -106,7 +103,7 @@ export function SourceCard({
               }
             >
               {local.isPublic ? (
-                <Globe className="h-4 w-4 text-sky-600" />
+                <Globe className="h-4 w-4 text-[var(--neon-cyan)]" />
               ) : (
                 <Lock className="h-4 w-4 text-muted-foreground" />
               )}

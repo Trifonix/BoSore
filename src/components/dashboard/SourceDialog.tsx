@@ -103,7 +103,7 @@ export function SourceDialog({ open, onOpenChange, source }: Props) {
             )}
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border p-3">
+          <div className="flex items-center justify-between rounded-lg border border-[var(--border-dim)] bg-[rgba(0,0,0,0.2)] p-3">
             <div>
               <Label htmlFor="isPublic">Публичный источник</Label>
               <p className="text-xs text-muted-foreground">

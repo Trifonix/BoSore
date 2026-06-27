@@ -29,9 +29,9 @@ export function DashboardSidebar({ userName, userImage }: Props) {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-full w-[280px] shrink-0 flex-col bg-gradient-to-b from-sky-100 via-sky-50 to-blue-50 px-4 py-6 shadow-sm">
+    <aside className="dashboard-sidebar">
       <div className="mb-8 flex items-center gap-3 px-2">
-        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-sky-200 text-sm font-semibold text-sky-800 ring-2 ring-white">
+        <div className="dashboard-avatar">
           {userImage ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={userImage} alt="" className="h-full w-full object-cover" />
@@ -40,12 +40,12 @@ export function DashboardSidebar({ userName, userImage }: Props) {
           )}
         </div>
         <div>
-          <p className="text-sm text-sky-700/70">Личный кабинет</p>
-          <p className="font-semibold text-slate-800">{userName}</p>
+          <p className="dashboard-user-label">Личный кабинет</p>
+          <p className="dashboard-user-name">{userName}</p>
         </div>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1">
+      <nav className="dashboard-nav">
         {NAV.map(({ href, label, icon: Icon, exact }) => {
           const active = exact ? pathname === href : pathname.startsWith(href);
           return (
@@ -53,10 +53,8 @@ export function DashboardSidebar({ userName, userImage }: Props) {
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                active
-                  ? "bg-white/80 text-sky-800 shadow-sm ring-1 ring-sky-100"
-                  : "text-slate-600 hover:bg-white/50 hover:text-slate-800",
+                "dashboard-nav-link",
+                active && "dashboard-nav-link--active",
               )}
             >
               <Icon className="h-4 w-4 shrink-0" />
@@ -69,10 +67,7 @@ export function DashboardSidebar({ userName, userImage }: Props) {
         })}
       </nav>
 
-      <Link
-        href="/"
-        className="mt-4 rounded-xl px-3 py-2 text-center text-sm text-slate-500 hover:bg-white/50 hover:text-slate-700"
-      >
+      <Link href="/" className="dashboard-home-link">
         ← На главную
       </Link>
     </aside>
