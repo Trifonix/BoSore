@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function MySourcesRedirect() {
+export default function MySourcesLegacyRedirect() {
   redirect("/dashboard");
 }

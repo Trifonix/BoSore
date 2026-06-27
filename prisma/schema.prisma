@@ -12,7 +12,6 @@ enum Visibility {
   PUBLIC
 }
 
-// Пользователь BoSore + совместимость с Auth.js (OAuth Google)
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -28,7 +27,6 @@ model User {
   votes    Vote[]
 }
 
-// OAuth-аккаунт провайдера (Google)
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -48,7 +46,6 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-// Server-side сессия Auth.js (strategy: "database")
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -84,7 +81,7 @@ model Category {
   sources Source[]
 }
 
-// Источник (книга/статья): привязан к владельцу через ownerId
+// Источник (книга/статья)
 model Source {
   id          String     @id @default(cuid())
   ownerId     String
@@ -93,6 +90,7 @@ model Source {
   description String? // оформление источника по ГОСТ (название уже внутри)
   categoryId  String
   visibility  Visibility @default(PRIVATE)
+  isFavorite  Boolean    @default(false)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   publishedAt DateTime?
@@ -104,6 +102,7 @@ model Source {
 
   @@index([ownerId, updatedAt])
   @@index([visibility, createdAt])
+  @@index([ownerId, isFavorite])
 }
 
 model Tag {

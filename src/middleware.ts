@@ -9,7 +9,9 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isProtected =
-    pathname.startsWith("/dashboard") || pathname.startsWith("/my-prompts");
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/my-sources") ||
+    pathname.startsWith("/my-prompts");
 
   if (!isProtected) {
     return NextResponse.next();
@@ -29,5 +31,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/my-prompts/:path*"],
+  matcher: ["/dashboard/:path*", "/my-sources/:path*", "/my-prompts/:path*"],
 };

@@ -10,8 +10,9 @@ Google OAuth через Auth.js. Пошаговая настройка Client ID
 
 **Маршруты:**
 - `/login` — вход через Google
-- `/dashboard` — личный кабинет (защищён middleware)
-- `/my-prompts` — источники пользователя, включая PRIVATE
+- `/dashboard` — «Мои источники»
+- `/dashboard/public` — публичные источники
+- `/dashboard/favorites` — избранное
 
 При первом входе пользователь автоматически создаётся в таблице `User`. Сессии хранятся server-side в таблице `Session`.
 
@@ -82,11 +83,11 @@ DATABASE_URL="postgresql://..." npm run db:seed
 ```
 src/
   auth.ts                 # конфигурация Auth.js
-  middleware.ts           # защита /dashboard, /my-prompts
+  middleware.ts           # защита /dashboard, /my-sources
   app/
-    login/page.tsx        # вход через Google
-    dashboard/page.tsx    # личный кабинет
-    my-prompts/page.tsx   # источники владельца (PRIVATE + PUBLIC)
+    login/page.tsx
+    dashboard/page.tsx    # мои источники
+    dashboard/public/     # публичные источники
     api/auth/[...nextauth]/route.ts
   lib/auth/
     session.ts            # requireAuth(), getCurrentUserId()
