@@ -10,7 +10,7 @@ export const TABLE_MODEL_MAP: Record<
   string,
   keyof Pick<
     PrismaClient,
-    "user" | "note" | "category" | "source" | "tag" | "vote"
+    "user" | "note" | "category" | "source" | "tag" | "vote" | "account" | "session"
   >
 > = {
   User: "user",
@@ -19,6 +19,8 @@ export const TABLE_MODEL_MAP: Record<
   Source: "source",
   Tag: "tag",
   Vote: "vote",
+  Account: "account",
+  Session: "session",
 };
 
 export const ALLOWED_TABLES = [
@@ -32,4 +34,7 @@ export function isAllowedTable(name: string): name is AllowedTable {
   return (ALLOWED_TABLES as readonly string[]).includes(name);
 }
 
-export const READ_ONLY_TABLES = new Set<string>(["_SourceToTag"]);
+export const READ_ONLY_TABLES = new Set<string>([
+  "_SourceToTag",
+  "VerificationToken",
+]);

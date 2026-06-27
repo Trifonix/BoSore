@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Orbitron, Exo_2 } from "next/font/google";
+import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
 
 const display = Orbitron({
@@ -27,7 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" className={`${display.variable} ${body.variable}`}>
-      <body>{children}</body>
+      <body>
+        <SiteHeader />
+        {children}
+      </body>
     </html>
   );
 }

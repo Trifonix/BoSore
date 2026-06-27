@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { publicSourcesFilter } from "@/lib/auth/access";
 import { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +18,7 @@ export default async function HomePage() {
 
   try {
     sources = await prisma.source.findMany({
-      where: { visibility: "PUBLIC" },
+      where: publicSourcesFilter,
       orderBy: { createdAt: "desc" },
       include: {
         _count: { select: { votes: true } },

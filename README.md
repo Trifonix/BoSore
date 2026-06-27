@@ -2,7 +2,31 @@
 
 Сервис по обмену описаниями книг, статей и оформлениями их как источники для списка литературы.
 
-Стек: **Next.js (App Router)** + **Prisma** + **NeonDB (PostgreSQL)**. Готов к деплою на **Vercel**.
+Стек: **Next.js (App Router)** + **Auth.js** + **Prisma** + **NeonDB (PostgreSQL)**. Деплой: **Vercel**.
+
+## Аутентификация (Google OAuth)
+
+1. Создайте OAuth Client в [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+2. Authorized redirect URI:
+   - локально: `http://localhost:3000/api/auth/callback/google`
+   - production: `https://YOUR_DOMAIN/api/auth/callback/google`
+3. Добавьте в `.env`:
+
+```env
+AUTH_SECRET="..."          # openssl rand -base64 32
+AUTH_URL="http://localhost:3000"
+GOOGLE_CLIENT_ID="..."
+GOOGLE_CLIENT_SECRET="..."
+```
+
+4. Примените миграцию auth: `npm run db:deploy`
+
+**Маршруты:**
+- `/login` — вход через Google
+- `/dashboard` — личный кабинет (защищён middleware)
+- `/my-prompts` — источники пользователя, включая PRIVATE
+
+При первом входе пользователь автоматически создаётся в таблице `User`. Сессии хранятся server-side в таблице `Session`.
 
 ## Быстрый старт
 
@@ -49,7 +73,12 @@ npm run dev
 
 1. Залейте репозиторий на GitHub.
 2. Импортируйте проект в [Vercel](https://vercel.com).
-3. В **Settings → Environment Variables** добавьте `DATABASE_URL` (тот же Neon connection string).
+3. В **Settings → Environment Variables** добавьте:
+   - `DATABASE_URL`
+   - `AUTH_SECRET`
+   - `AUTH_URL` (https://your-domain.vercel.app)
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
 4. Деплой. Скрипт `build` автоматически выполнит `prisma generate`.
 
 ### Миграции на production
@@ -70,16 +99,16 @@ DATABASE_URL="postgresql://..." npm run db:seed
 
 ```
 src/
+  auth.ts                 # конфигурация Auth.js
+  middleware.ts           # защита /dashboard, /my-prompts
   app/
-    page.tsx      # главная страница, публичные Source из БД
-    layout.tsx
-  lib/
-    prisma.ts     # singleton Prisma Client
-prisma/
-  schema.prisma   # модели User, Source, Vote и др.
-  seed.ts         # тестовые источники
-scripts/
-  verify-db.ts    # проверка: пользователь, источник, голос
+    login/page.tsx        # вход через Google
+    dashboard/page.tsx    # личный кабинет
+    my-prompts/page.tsx   # источники владельца (PRIVATE + PUBLIC)
+    api/auth/[...nextauth]/route.ts
+  lib/auth/
+    session.ts            # requireAuth(), getCurrentUserId()
+    access.ts             # фильтры доступа к Source
 ```
 
 ## Модель Source (источник)
