@@ -1,25 +1,32 @@
-import { auth, signIn } from "@/auth";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { GoogleLoginButton } from "@/components/GoogleLoginButton";
 
 type PageProps = {
-  searchParams: Promise<{ callbackUrl?: string }>;
+  searchParams: Promise<{ callbackUrl?: string; error?: string }>;
+};
+
+const ERROR_MESSAGES: Record<string, string> = {
+  Configuration:
+    "Ошибка конфигурации Auth.js. Проверьте AUTH_SECRET, GOOGLE_CLIENT_ID/SECRET и AUTH_URL.",
+  AccessDenied: "Доступ запрещён. Возможно, ваш email не в списке Test users.",
+  OAuthSignin: "Не удалось начать вход через Google.",
+  OAuthCallback: "Ошибка OAuth callback. Очистите cookies для localhost и попробуйте снова.",
+  Default: "Не удалось войти. Попробуйте ещё раз.",
 };
 
 export default async function LoginPage({ searchParams }: PageProps) {
   const session = await auth();
-  const { callbackUrl } = await searchParams;
+  const { callbackUrl, error } = await searchParams;
 
-  // Уже авторизован — в личный кабинет
   if (session?.user) {
     redirect("/dashboard");
   }
 
-  async function loginWithGoogle() {
-    "use server";
-    await signIn("google", {
-      redirectTo: callbackUrl ?? "/dashboard",
-    });
-  }
+  const redirectTo = callbackUrl ?? "/dashboard";
+  const errorMessage = error
+    ? (ERROR_MESSAGES[error] ?? ERROR_MESSAGES.Default)
+    : null;
 
   return (
     <div className="page">
@@ -34,11 +41,14 @@ export default async function LoginPage({ searchParams }: PageProps) {
           Авторизуйтесь через Google. При первом входе аккаунт будет создан
           автоматически.
         </p>
-        <form action={loginWithGoogle}>
-          <button type="submit" className="auth-btn auth-btn-google">
-            Войти через Google
-          </button>
-        </form>
+
+        {errorMessage && (
+          <p className="auth-error" role="alert">
+            {errorMessage}
+          </p>
+        )}
+
+        <GoogleLoginButton callbackUrl={redirectTo} />
       </section>
     </div>
   );

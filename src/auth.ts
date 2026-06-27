@@ -4,13 +4,12 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
 /**
- * Конфигурация Auth.js:
- * - OAuth Google
- * - server-side сессии в PostgreSQL (таблица Session)
- * - пользователь создаётся автоматически через PrismaAdapter при первом входе
+ * Auth.js: Google OAuth + server-side сессии в PostgreSQL.
+ * Вход инициируется с /login через client-side signIn (см. GoogleLoginButton).
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  secret: process.env.AUTH_SECRET,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -21,10 +20,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     strategy: "database",
   },
   pages: {
-    signIn: "/login",
+    // Ошибки OAuth показываем на /login?error=...
+    error: "/login",
   },
   callbacks: {
-    // Пробрасываем userId в объект session для server-side проверок
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
@@ -32,5 +31,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
   },
+  cookies: {
+    pkceCodeVerifier: {
+      options: {
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   trustHost: true,
+  debug: process.env.NODE_ENV === "development",
 });

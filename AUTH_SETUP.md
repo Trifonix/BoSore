@@ -108,6 +108,11 @@ npm run dev
 
 ## Частые проблемы
 
+**Server error / `error=Configuration` после Google**  
+1. Очистите cookies для `localhost` в браузере.  
+2. `AUTH_URL` должен совпадать с портом dev-сервера (`http://localhost:3000`). Если порт занят и Next.js стартует на 3001 — либо освободите 3000, либо обновите `AUTH_URL`.  
+3. Перезапустите `npm run dev` и войдите снова через кнопку на `/login`.
+
 **`redirect_uri_mismatch`**  
 Redirect URI в Google Console не совпадает с фактическим URL callback. Проверьте `AUTH_URL` и URI в credentials.
 

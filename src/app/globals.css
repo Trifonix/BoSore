@@ -339,3 +339,14 @@ body::after {
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.12);
 }
+
+.auth-error {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 45, 149, 0.4);
+  background: rgba(255, 45, 149, 0.08);
+  color: #ff9ec7;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
