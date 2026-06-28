@@ -1,4 +1,4 @@
-import { ThumbsUp } from "lucide-react";
+import { LikeStat } from "@/components/LikeStat";
 import { formatLikesCountUpper } from "@/lib/format-likes";
 import type { PublicSourceFeedItem } from "@/lib/data/sources";
 
@@ -32,10 +32,12 @@ export function HomePublicSources({ sources, isAuthenticated }: Props) {
                 {formatLikesCountUpper(source.likesCount)}
               </span>
             ) : (
-              <span className="home-like-display" aria-label={`${source.likesCount} лайков`}>
-                <ThumbsUp className="home-like-display-icon" aria-hidden />
-                <span className="home-like-display-count">{source.likesCount}</span>
-              </span>
+              <LikeStat
+                count={source.likesCount}
+                highlighted={source.likesCount > 0}
+                readonly
+                layout="inline"
+              />
             )}
           </div>
         </li>

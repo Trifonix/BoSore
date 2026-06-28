@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ThumbsUp } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { LikeStat } from "@/components/LikeStat";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -78,41 +77,21 @@ export function LikeButton({
   return (
     <div
       className={cn(
-        layout === "inline" ? "home-like-btn" : "flex flex-col items-center gap-0.5",
+        layout === "inline" ? "like-stat-wrap--inline" : "like-stat-wrap",
+        loading && "opacity-70 pointer-events-none",
       )}
     >
-      <div className={cn("flex items-center gap-1", layout === "inline" && "home-like-row")}>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          aria-label={liked ? "Убрать лайк" : "Поставить лайк"}
-          aria-pressed={liked}
-          disabled={loading}
-          onClick={handleClick}
-        >
-          <ThumbsUp
-            className={cn(
-              "h-4 w-4 transition-colors",
-              liked
-                ? "fill-[var(--neon-cyan)] text-[var(--neon-cyan)] drop-shadow-[0_0_6px_rgba(0,255,245,0.6)]"
-                : "text-muted-foreground",
-            )}
-          />
-        </Button>
-        <span
-          className={cn(
-            "min-w-[1.25rem] text-sm tabular-nums",
-            liked ? "text-[var(--neon-cyan)]" : "text-muted-foreground",
-          )}
-        >
-          {count}
-        </span>
-      </div>
+      <LikeStat
+        count={count}
+        highlighted={liked}
+        disabled={loading}
+        layout="inline"
+        aria-label={liked ? "Убрать лайк" : "Поставить лайк"}
+        aria-pressed={liked}
+        onClick={handleClick}
+      />
       {error && (
-        <span className="max-w-[8rem] text-center text-[0.65rem] leading-tight text-destructive">
-          {error}
-        </span>
+        <span className="like-stat-error">{error}</span>
       )}
     </div>
   );
