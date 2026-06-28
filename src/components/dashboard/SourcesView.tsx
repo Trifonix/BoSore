@@ -57,9 +57,17 @@ export function SourcesView({
         else params.delete("page");
       }
       const qs = params.toString();
-      router.push(qs ? `${pathname}?${qs}` : pathname);
+      if (qs === searchParams.toString()) return;
+
+      const href = qs ? `${pathname}?${qs}` : pathname;
+      router.push(href, { scroll: false });
     },
     [pathname, router, searchParams],
+  );
+
+  const handleSearch = useCallback(
+    (value: string) => pushParams({ q: value }),
+    [pushParams],
   );
 
   return (
@@ -83,7 +91,7 @@ export function SourcesView({
       </div>
 
       <div className="mb-6">
-        <SearchInput defaultValue={q} onSearch={(value) => pushParams({ q: value })} />
+        <SearchInput defaultValue={q} onSearch={handleSearch} />
       </div>
 
       {showLikes && (

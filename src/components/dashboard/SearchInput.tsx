@@ -9,7 +9,7 @@ type Props = {
   onSearch: (value: string) => void;
 };
 
-/** Поиск с debounce 300ms */
+/** Поиск с debounce 300ms; не дергает onSearch, если значение совпадает с URL */
 export function SearchInput({ defaultValue = "", onSearch }: Props) {
   const [value, setValue] = useState(defaultValue);
 
@@ -18,9 +18,12 @@ export function SearchInput({ defaultValue = "", onSearch }: Props) {
   }, [defaultValue]);
 
   useEffect(() => {
-    const timer = setTimeout(() => onSearch(value.trim()), 300);
+    const trimmed = value.trim();
+    if (trimmed === defaultValue.trim()) return;
+
+    const timer = setTimeout(() => onSearch(trimmed), 300);
     return () => clearTimeout(timer);
-  }, [value, onSearch]);
+  }, [value, defaultValue, onSearch]);
 
   return (
     <div className="relative max-w-md">
