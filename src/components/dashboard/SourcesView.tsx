@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { SourceCard } from "@/components/dashboard/SourceCard";
 import { SourceDialog } from "@/components/dashboard/SourceDialog";
 import { SearchInput } from "@/components/dashboard/SearchInput";
-import type { SourceDTO, SourceListResult } from "@/lib/data/sources";
+import { LikeButton } from "@/components/dashboard/LikeButton";
+import type { SourceDTO, SourceListResult, SourceSort } from "@/lib/data/sources";
 
 type Props = {
   data: SourceListResult;
@@ -16,6 +17,8 @@ type Props = {
   emptyMessage: string;
   showCreate?: boolean;
   canToggleFavorite?: boolean;
+  showLikes?: boolean;
+  sort?: SourceSort;
 };
 
 export function SourcesView({
@@ -25,6 +28,8 @@ export function SourcesView({
   emptyMessage,
   showCreate = true,
   canToggleFavorite = true,
+  showLikes = false,
+  sort = "recent",
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -36,11 +41,15 @@ export function SourcesView({
   const page = data.page;
 
   const pushParams = useCallback(
-    (next: { q?: string; page?: number }) => {
+    (next: { q?: string; page?: number; sort?: SourceSort }) => {
       const params = new URLSearchParams(searchParams.toString());
       if (next.q !== undefined) {
         if (next.q) params.set("q", next.q);
         else params.delete("q");
+        params.delete("page");
+      }
+      if (next.sort !== undefined) {
+        params.set("sort", next.sort);
         params.delete("page");
       }
       if (next.page !== undefined) {
@@ -77,6 +86,27 @@ export function SourcesView({
         <SearchInput defaultValue={q} onSearch={(value) => pushParams({ q: value })} />
       </div>
 
+      {showLikes && (
+        <div className="mb-6 flex flex-wrap gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant={sort === "recent" ? "default" : "outline"}
+            onClick={() => pushParams({ sort: "recent" })}
+          >
+            По дате
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={sort === "popular" ? "default" : "outline"}
+            onClick={() => pushParams({ sort: "popular" })}
+          >
+            По популярности
+          </Button>
+        </div>
+      )}
+
       {data.items.length === 0 ? (
         <div className="dashboard-empty">
           <p>{emptyMessage}</p>
@@ -102,6 +132,7 @@ export function SourcesView({
               source={source}
               currentUserId={currentUserId}
               canToggleFavorite={canToggleFavorite}
+              showLikes={showLikes}
               onEdit={(item) => {
                 setEditing(item);
                 setDialogOpen(true);

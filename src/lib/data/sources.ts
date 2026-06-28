@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { PAGE_SIZE } from "@/lib/validations/source";
 import type { Prisma, Visibility } from "@prisma/client";
 
+export type SourceSort = "recent" | "popular";
+
 export type SourceDTO = {
   id: string;
   ownerId: string;
@@ -12,6 +14,8 @@ export type SourceDTO = {
   createdAt: Date;
   updatedAt: Date;
   ownerName: string | null;
+  likesCount?: number;
+  likedByMe?: boolean;
 };
 
 export type SourceListResult = {
@@ -124,26 +128,53 @@ export async function getFavoriteSources(
 export async function getPublicSources(
   page = 1,
   q = "",
+  sort: SourceSort = "recent",
+  currentUserId?: string | null,
 ): Promise<SourceListResult> {
   const where: Prisma.SourceWhereInput = {
     visibility: "PUBLIC",
     ...searchFilter(q),
   };
 
+  const orderBy: Prisma.SourceOrderByWithRelationInput =
+    sort === "popular"
+      ? { likes: { _count: "desc" } }
+      : { createdAt: "desc" };
+
   const skip = (page - 1) * PAGE_SIZE;
   const [items, total] = await Promise.all([
     prisma.source.findMany({
       where,
-      orderBy: { createdAt: "desc" },
+      orderBy,
       skip,
       take: PAGE_SIZE,
-      include: { owner: { select: { name: true } } },
+      include: {
+        owner: { select: { name: true } },
+        _count: { select: { likes: true } },
+      },
     }),
     prisma.source.count({ where }),
   ]);
 
+  let likedSourceIds = new Set<string>();
+
+  if (currentUserId && items.length > 0) {
+    const likes = await prisma.like.findMany({
+      where: {
+        userId: currentUserId,
+        sourceId: { in: items.map((item) => item.id) },
+      },
+      select: { sourceId: true },
+    });
+    likedSourceIds = new Set(likes.map((like) => like.sourceId));
+  }
+
   return {
-    items: items.map(mapSource),
+    items: items.map((source) => ({
+      ...mapSource(source),
+      likesCount: source._count.likes,
+      likedByMe: likedSourceIds.has(source.id),
+    })),
     total,
     page,
     pageSize: PAGE_SIZE,

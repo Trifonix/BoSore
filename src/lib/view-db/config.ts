@@ -10,7 +10,7 @@ export const TABLE_MODEL_MAP: Record<
   string,
   keyof Pick<
     PrismaClient,
-    "user" | "note" | "category" | "source" | "tag" | "vote" | "account" | "session"
+    "user" | "note" | "category" | "source" | "tag" | "vote" | "like" | "account" | "session"
   >
 > = {
   User: "user",
@@ -19,6 +19,7 @@ export const TABLE_MODEL_MAP: Record<
   Source: "source",
   Tag: "tag",
   Vote: "vote",
+  Like: "like",
   Account: "account",
   Session: "session",
 };

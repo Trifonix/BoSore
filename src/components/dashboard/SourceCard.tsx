@@ -15,6 +15,7 @@ import {
   toggleFavorite,
   togglePublic,
 } from "@/lib/actions/sources";
+import { LikeButton } from "@/components/dashboard/LikeButton";
 import type { SourceDTO } from "@/lib/data/sources";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,7 @@ type Props = {
   currentUserId: string;
   onEdit: (source: SourceDTO) => void;
   canToggleFavorite?: boolean;
+  showLikes?: boolean;
 };
 
 export function SourceCard({
@@ -30,6 +32,7 @@ export function SourceCard({
   currentUserId,
   onEdit,
   canToggleFavorite = true,
+  showLikes = false,
 }: Props) {
   const [isPending, startTransition] = useTransition();
   const [local, setLocal] = useState(source);
@@ -68,6 +71,14 @@ export function SourceCard({
       </div>
 
       <div className="flex shrink-0 items-center gap-1">
+        {showLikes && local.isPublic && (
+          <LikeButton
+            sourceId={local.id}
+            initialLiked={local.likedByMe ?? false}
+            initialCount={local.likesCount ?? 0}
+          />
+        )}
+
         {canToggleFavorite && isOwner && (
           <Button
             variant="ghost"
