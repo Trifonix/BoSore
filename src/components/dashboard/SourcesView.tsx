@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useLoadingRouter } from "@/hooks/useLoadingRouter";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SourceCard } from "@/components/dashboard/SourceCard";
@@ -31,7 +32,7 @@ export function SourcesView({
   showLikes = false,
   sort = "recent",
 }: Props) {
-  const router = useRouter();
+  const router = useLoadingRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [dialogOpen, setDialogOpen] = useState(false);

@@ -1101,3 +1101,112 @@ body:has(.dashboard-layout-marker) {
   font-size: 0.92rem;
   line-height: 1.5;
 }
+
+body.page-is-loading {
+  overflow: hidden;
+}
+
+body.page-is-loading .site-chrome-root,
+body.page-is-loading .site-main,
+body.page-is-loading .dashboard-shell {
+  filter: blur(6px) saturate(0.85);
+  transition: filter 0.25s ease;
+}
+
+.page-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: rgba(5, 5, 8, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.35s ease,
+    visibility 0.35s ease;
+}
+
+.page-loading-overlay.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.page-loading-spinner {
+  position: relative;
+  width: 72px;
+  height: 72px;
+}
+
+.page-loading-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+
+.page-loading-ring-outer {
+  border-top-color: var(--neon-cyan);
+  border-right-color: var(--neon-magenta);
+  animation: page-loading-spin 0.95s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 245, 0.55));
+}
+
+.page-loading-ring-inner {
+  inset: 10px;
+  border-bottom-color: var(--neon-violet);
+  border-left-color: rgba(0, 255, 245, 0.85);
+  animation: page-loading-spin 1.35s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite reverse;
+  filter: drop-shadow(0 0 8px rgba(176, 38, 255, 0.45));
+}
+
+.page-loading-core {
+  position: absolute;
+  inset: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(0, 255, 245, 0.35), transparent 65%);
+  box-shadow:
+    0 0 24px rgba(0, 255, 245, 0.25),
+    inset 0 0 12px rgba(255, 45, 149, 0.15);
+  animation: page-loading-pulse 1.6s ease-in-out infinite;
+}
+
+.page-loading-label {
+  margin: 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--neon-cyan), #fff 45%, var(--neon-magenta));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 20px rgba(0, 255, 245, 0.2);
+}
+
+@keyframes page-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes page-loading-pulse {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Orbitron, Exo_2 } from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { PageLoadingOverlay } from "@/components/layout/PageLoadingOverlay";
+import { PageLoadingProvider } from "@/components/layout/PageLoadingProvider";
 import "./globals.css";
 
 const display = Orbitron({
@@ -30,9 +33,13 @@ export default function RootLayout({
   return (
     <html lang="ru" className={`${display.variable} ${body.variable}`}>
       <body>
-        <Header />
-        <main className="site-main">{children}</main>
-        <Footer />
+        <Suspense fallback={<PageLoadingOverlay visible />}>
+          <PageLoadingProvider>
+            <Header />
+            <main className="site-main">{children}</main>
+            <Footer />
+          </PageLoadingProvider>
+        </Suspense>
       </body>
     </html>
   );

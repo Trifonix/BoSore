@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useLoadingRouter } from "@/hooks/useLoadingRouter";
 import { LikeStat } from "@/components/LikeStat";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +19,7 @@ export function LikeButton({
   initialCount,
   layout = "stack",
 }: Props) {
-  const router = useRouter();
+  const router = useLoadingRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [liked, setLiked] = useState(initialLiked);
