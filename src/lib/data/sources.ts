@@ -207,14 +207,13 @@ export async function getPublicSources(
   };
 }
 
-/** Публичная лента для главной страницы (без пагинации) */
+/** Публичная лента для главной страницы (сортировка по лайкам) */
 export async function getPublicSourcesFeed(
-  sort: SourceSort = "recent",
   currentUserId?: string | null,
 ): Promise<PublicSourceFeedItem[]> {
   const items = await prisma.source.findMany({
     where: publicSourcesFilter,
-    orderBy: publicSourcesOrderBy(sort),
+    orderBy: publicSourcesOrderBy("popular"),
     include: { _count: { select: { likes: true } } },
   });
 

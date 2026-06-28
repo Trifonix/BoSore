@@ -11,7 +11,7 @@ export default async function HomePage() {
   let dbError: string | null = null;
 
   try {
-    sources = await getPublicSourcesFeed("recent", session?.user?.id ?? null);
+    sources = await getPublicSourcesFeed(session?.user?.id ?? null);
   } catch (error) {
     dbError = getDbErrorMessage(error);
   }
