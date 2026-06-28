@@ -11,7 +11,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -36,8 +35,8 @@ export function SourceDialog({ open, onOpenChange, source }: Props) {
   const form = useForm<SourceFormValues>({
     resolver: zodResolver(sourceFormSchema),
     defaultValues: {
-      title: "",
       content: "",
+      description: "",
       isPublic: false,
     },
   });
@@ -45,8 +44,8 @@ export function SourceDialog({ open, onOpenChange, source }: Props) {
   useEffect(() => {
     if (open) {
       form.reset({
-        title: source?.title ?? "",
         content: source?.content ?? "",
+        description: source?.description ?? "",
         isPublic: source?.isPublic ?? false,
       });
       setError(null);
@@ -77,28 +76,38 @@ export function SourceDialog({ open, onOpenChange, source }: Props) {
             {isEdit ? "Редактировать источник" : "Новый источник"}
           </DialogTitle>
           <DialogDescription>
-            Заголовок и содержание источника. Публичные источники видны всем
-            пользователям.
+            Краткое описание и оформление по ГОСТ для списка литературы.
+            Публичные источники видны всем пользователям.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Заголовок</Label>
-            <Input id="title" {...form.register("title")} />
-            {form.formState.errors.title && (
+            <Label htmlFor="content">Описание</Label>
+            <Textarea
+              id="content"
+              rows={4}
+              placeholder="Кратко: о чём книга или статья"
+              {...form.register("content")}
+            />
+            {form.formState.errors.content && (
               <p className="text-sm text-destructive">
-                {form.formState.errors.title.message}
+                {form.formState.errors.content.message}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="content">Содержание</Label>
-            <Textarea id="content" rows={5} {...form.register("content")} />
-            {form.formState.errors.content && (
+            <Label htmlFor="description">По ГОСТ</Label>
+            <Textarea
+              id="description"
+              rows={4}
+              placeholder="Библиографическое описание для списка литературы (название уже внутри)"
+              {...form.register("description")}
+            />
+            {form.formState.errors.description && (
               <p className="text-sm text-destructive">
-                {form.formState.errors.content.message}
+                {form.formState.errors.description.message}
               </p>
             )}
           </div>

@@ -35,7 +35,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
                     id: source.id,
                     title: source.title,
                     content: source.content,
-                    description: null,
+                    description: source.description,
                     createdAt: source.createdAt,
                     ownerId: source.ownerId,
                     ownerName: source.ownerName,

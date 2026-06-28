@@ -31,11 +31,10 @@ export default async function SourcePage({ params }: PageProps) {
     <div className="page source-detail-page">
       <header className="header">
         <p className="source-detail-meta">
-          {author} · {date}
+          Автор: {author} · добавлен {date}
         </p>
-        <h1 className="page-title">{source.title}</h1>
         {source.tags.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {source.tags.map((tag) => (
               <Badge key={tag.id} variant="secondary">
                 {tag.name}
@@ -45,12 +44,16 @@ export default async function SourcePage({ params }: PageProps) {
         )}
       </header>
 
-      <article className="source-detail-body">
-        <p className="source-detail-content">{source.content}</p>
+      <article className="source-detail-body space-y-6">
+        <div className="source-field">
+          <span className="source-field-label">Описание</span>
+          <p className="source-detail-content">{source.content}</p>
+        </div>
+
         {source.description && (
-          <div className="item-gost mt-6">
-            <span className="item-gost-label">По ГОСТ</span>
-            {source.description}
+          <div className="source-field source-field-gost item-gost">
+            <span className="source-field-label item-gost-label">По ГОСТ</span>
+            <p className="source-detail-content m-0">{source.description}</p>
           </div>
         )}
       </article>

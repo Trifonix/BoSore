@@ -1,14 +1,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { PublicSourceLike } from "@/components/public/PublicSourceLike";
 import type { PublicSourceCardItem } from "@/lib/data/sources";
 
@@ -17,8 +10,8 @@ type Props = {
   isAuthenticated: boolean;
 };
 
-function previewText(content: string, max = 160): string {
-  return content.length > max ? `${content.slice(0, max)}…` : content;
+function previewText(text: string, max = 160): string {
+  return text.length > max ? `${text.slice(0, max)}…` : text;
 }
 
 export function PublicSourceCard({ source, isAuthenticated }: Props) {
@@ -31,14 +24,25 @@ export function PublicSourceCard({ source, isAuthenticated }: Props) {
 
   return (
     <Card className="public-source-card">
-      <CardHeader>
-        <CardTitle>{source.title}</CardTitle>
-        <CardDescription>
-          {author} · {date}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <p className="public-source-preview">{previewText(source.content)}</p>
+      <CardContent className="space-y-4 pt-5">
+        <div className="source-field">
+          <span className="source-field-label">Описание</span>
+          <p className="source-field-text">{previewText(source.content)}</p>
+        </div>
+
+        {source.description && (
+          <div className="source-field source-field-gost">
+            <span className="source-field-label">По ГОСТ</span>
+            <p className="source-field-text">{previewText(source.description, 200)}</p>
+          </div>
+        )}
+
+        <p className="source-card-meta">
+          <span>Автор: {author}</span>
+          <span aria-hidden> · </span>
+          <time dateTime={source.createdAt.toISOString()}>{date}</time>
+        </p>
+
         {source.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {source.tags.map((tag) => (

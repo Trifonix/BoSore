@@ -632,6 +632,40 @@ button.like-stat:disabled {
   color: var(--text-secondary);
 }
 
+.source-field-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+}
+
+.source-field-gost .source-field-label {
+  color: var(--neon-magenta);
+}
+
+.source-field-text {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text-primary);
+}
+
+.source-field-gost .source-field-text {
+  color: var(--text-secondary);
+}
+
+.source-card-meta {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+
 .source-detail-meta {
   margin: 0 0 0.5rem;
   font-size: 0.875rem;

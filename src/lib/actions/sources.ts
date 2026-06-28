@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth/session";
-import { sourceFormSchema } from "@/lib/validations/source";
+import { sourceFormSchema, deriveSourceTitle } from "@/lib/validations/source";
 
 const DASHBOARD_PATHS = [
   "/dashboard",
@@ -44,8 +44,9 @@ export async function createSource(data: unknown) {
     data: {
       ownerId: session.user.id,
       categoryId,
-      title: parsed.title,
+      title: deriveSourceTitle(parsed.description, parsed.content),
       content: parsed.content,
+      description: parsed.description || null,
       visibility: parsed.isPublic ? "PUBLIC" : "PRIVATE",
       publishedAt: parsed.isPublic ? new Date() : null,
     },
@@ -53,6 +54,8 @@ export async function createSource(data: unknown) {
 
   revalidateDashboard();
   revalidatePath("/");
+  revalidatePath("/catalog");
+  revalidatePath("/sources/[id]", "page");
   return { ok: true };
 }
 
@@ -64,8 +67,9 @@ export async function updateSource(id: string, data: unknown) {
   await prisma.source.update({
     where: { id },
     data: {
-      title: parsed.title,
+      title: deriveSourceTitle(parsed.description, parsed.content),
       content: parsed.content,
+      description: parsed.description || null,
       visibility: parsed.isPublic ? "PUBLIC" : "PRIVATE",
       publishedAt: parsed.isPublic
         ? (existing.publishedAt ?? new Date())
@@ -75,6 +79,8 @@ export async function updateSource(id: string, data: unknown) {
 
   revalidateDashboard();
   revalidatePath("/");
+  revalidatePath("/catalog");
+  revalidatePath("/sources/[id]", "page");
   return { ok: true };
 }
 
@@ -85,6 +91,8 @@ export async function deleteSource(id: string) {
   await prisma.source.delete({ where: { id } });
   revalidateDashboard();
   revalidatePath("/");
+  revalidatePath("/catalog");
+  revalidatePath("/sources/[id]", "page");
   return { ok: true };
 }
 
@@ -103,6 +111,8 @@ export async function togglePublic(id: string) {
 
   revalidateDashboard();
   revalidatePath("/");
+  revalidatePath("/catalog");
+  revalidatePath("/sources/[id]", "page");
   return { ok: true, isPublic };
 }
 

@@ -10,6 +10,7 @@ export type SourceDTO = {
   ownerId: string;
   title: string;
   content: string;
+  description: string | null;
   isPublic: boolean;
   isFavorite: boolean;
   createdAt: Date;
@@ -112,8 +113,8 @@ function searchFilter(q: string): Prisma.SourceWhereInput {
   if (!q.trim()) return {};
   return {
     OR: [
-      { title: { contains: q, mode: "insensitive" } },
       { content: { contains: q, mode: "insensitive" } },
+      { description: { contains: q, mode: "insensitive" } },
     ],
   };
 }
@@ -124,6 +125,7 @@ function mapSource(
     ownerId: string;
     title: string;
     content: string;
+    description: string | null;
     visibility: Visibility;
     isFavorite: boolean;
     createdAt: Date;
@@ -136,6 +138,7 @@ function mapSource(
     ownerId: source.ownerId,
     title: source.title,
     content: source.content,
+    description: source.description,
     isPublic: source.visibility === "PUBLIC",
     isFavorite: source.isFavorite,
     createdAt: source.createdAt,

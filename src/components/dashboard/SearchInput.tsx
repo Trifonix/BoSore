@@ -31,7 +31,7 @@ export function SearchInput({ defaultValue = "", onSearch }: Props) {
       <Input
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="Поиск по заголовку и тексту..."
+        placeholder="Поиск по описанию и ГОСТ..."
         className="pl-9"
       />
     </div>

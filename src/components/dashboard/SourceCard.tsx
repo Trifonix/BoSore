@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import {
   Globe,
@@ -27,6 +28,10 @@ type Props = {
   showLikes?: boolean;
 };
 
+function preview(text: string, max = 120): string {
+  return text.length > max ? `${text.slice(0, max)}…` : text;
+}
+
 export function SourceCard({
   source,
   currentUserId,
@@ -38,10 +43,11 @@ export function SourceCard({
   const [local, setLocal] = useState(source);
   const isOwner = source.ownerId === currentUserId;
 
-  const preview =
-    local.content.length > 140
-      ? `${local.content.slice(0, 140)}…`
-      : local.content;
+  const date = local.createdAt.toLocaleDateString("ru-RU", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 
   function runAction(action: () => Promise<unknown>, optimistic?: Partial<SourceDTO>) {
     startTransition(async () => {
@@ -54,6 +60,8 @@ export function SourceCard({
     });
   }
 
+  const deleteLabel = preview(local.content, 40);
+
   return (
     <article
       className={cn("dashboard-card", isPending && "opacity-70 pointer-events-none")}
@@ -62,11 +70,26 @@ export function SourceCard({
         <MessageSquare className="h-4 w-4" />
       </div>
 
-      <div className="min-w-0 flex-1">
-        <h3 className="dashboard-card-title">{local.title}</h3>
-        <p className="dashboard-card-preview">{preview}</p>
-        {!isOwner && local.ownerName && (
-          <p className="dashboard-card-meta">Автор: {local.ownerName}</p>
+      <div className="min-w-0 flex-1 space-y-2">
+        <div>
+          <p className="source-field-label mb-1">Описание</p>
+          <p className="dashboard-card-preview">{preview(local.content)}</p>
+        </div>
+        {local.description && (
+          <div>
+            <p className="source-field-label mb-1">По ГОСТ</p>
+            <p className="dashboard-card-preview text-[var(--text-muted)]">
+              {preview(local.description, 100)}
+            </p>
+          </div>
+        )}
+        <p className="dashboard-card-meta">
+          Автор: {isOwner ? "вы" : (local.ownerName ?? "—")} · {date}
+        </p>
+        {local.isPublic && (
+          <Button asChild variant="outline" size="sm" className="mt-1">
+            <Link href={`/sources/${local.id}`}>Открыть</Link>
+          </Button>
         )}
       </div>
 
@@ -132,7 +155,7 @@ export function SourceCard({
               size="icon"
               aria-label="Удалить"
               onClick={() => {
-                if (window.confirm(`Удалить «${local.title}»?`)) {
+                if (window.confirm(`Удалить источник «${deleteLabel}»?`)) {
                   runAction(() => deleteSource(local.id));
                 }
               }}
