@@ -11,6 +11,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:verify": "tsx scripts/verify-db.ts",
+    "db:cleanup-gmail": "tsx scripts/cleanup-gmail-users.ts",
     "db:studio": "prisma studio",
     "view-db": "tsx scripts/run-view-db.ts",
     "favicon": "python scripts/generate_favicon.py"
