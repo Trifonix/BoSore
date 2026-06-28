@@ -24,21 +24,23 @@ export function PublicSourceCard({ source, isAuthenticated }: Props) {
 
   return (
     <Card className="public-source-card">
-      <CardContent className="space-y-4 pt-5">
-        <p className="source-text-content">{previewText(source.content)}</p>
+      <CardContent className="public-source-card-body">
+        <div className="public-source-card-spread">
+          <p className="source-text-content">{previewText(source.content)}</p>
 
-        {source.description && (
-          <p className="source-text-gost">{previewText(source.description, 200)}</p>
-        )}
+          {source.description ? (
+            <p className="source-text-gost">{previewText(source.description, 200)}</p>
+          ) : null}
 
-        <p className="source-card-meta">
-          <span>Автор: {author}</span>
-          <span aria-hidden> · </span>
-          <time dateTime={source.createdAt.toISOString()}>{date}</time>
-        </p>
+          <p className="source-card-meta">
+            <span>Автор: {author}</span>
+            <span aria-hidden> · </span>
+            <time dateTime={source.createdAt.toISOString()}>{date}</time>
+          </p>
+        </div>
 
         {source.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="public-source-card-tags flex flex-wrap gap-1.5">
             {source.tags.map((tag) => (
               <Badge key={tag.id} variant="secondary">
                 {tag.name}
@@ -47,7 +49,7 @@ export function PublicSourceCard({ source, isAuthenticated }: Props) {
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex flex-wrap items-center justify-between gap-3">
+      <CardFooter className="public-source-card-footer flex flex-wrap items-center justify-between gap-3">
         <Button asChild variant="outline" size="sm">
           <Link href={`/sources/${source.id}`}>Открыть</Link>
         </Button>
