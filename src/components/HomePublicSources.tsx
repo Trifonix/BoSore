@@ -1,7 +1,5 @@
-"use client";
-
-import { LikeButton } from "@/components/dashboard/LikeButton";
-import { formatLikesCount } from "@/lib/format-likes";
+import { ThumbsUp } from "lucide-react";
+import { formatLikesCountUpper } from "@/lib/format-likes";
 import type { PublicSourceFeedItem } from "@/lib/data/sources";
 
 type Props = {
@@ -30,14 +28,14 @@ export function HomePublicSources({ sources, isAuthenticated }: Props) {
               })}
             </time>
             {isAuthenticated ? (
-              <LikeButton
-                sourceId={source.id}
-                initialLiked={source.likedByMe}
-                initialCount={source.likesCount}
-                layout="inline"
-              />
+              <span className="item-likes">
+                {formatLikesCountUpper(source.likesCount)}
+              </span>
             ) : (
-              <span className="item-likes">{formatLikesCount(source.likesCount)}</span>
+              <span className="home-like-display" aria-label={`${source.likesCount} лайков`}>
+                <ThumbsUp className="home-like-display-icon" aria-hidden />
+                <span className="home-like-display-count">{source.likesCount}</span>
+              </span>
             )}
           </div>
         </li>

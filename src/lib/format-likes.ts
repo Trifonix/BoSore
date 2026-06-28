@@ -9,3 +9,7 @@ export function formatLikesCount(n: number): string {
   }
   return `${n} лайков`;
 }
+
+export function formatLikesCountUpper(n: number): string {
+  return formatLikesCount(n).toLocaleUpperCase("ru-RU");
+}
