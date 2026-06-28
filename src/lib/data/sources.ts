@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { publicSourcesFilter } from "@/lib/auth/access";
 import { PAGE_SIZE } from "@/lib/validations/source";
 import type { Prisma, Visibility } from "@prisma/client";
 
@@ -25,6 +26,37 @@ export type SourceListResult = {
   pageSize: number;
   totalPages: number;
 };
+
+export type PublicSourceFeedItem = {
+  id: string;
+  content: string;
+  description: string | null;
+  createdAt: Date;
+  likesCount: number;
+  likedByMe: boolean;
+};
+
+async function getLikedSourceIds(
+  userId: string,
+  sourceIds: string[],
+): Promise<Set<string>> {
+  if (sourceIds.length === 0) return new Set();
+
+  const likes = await prisma.like.findMany({
+    where: { userId, sourceId: { in: sourceIds } },
+    select: { sourceId: true },
+  });
+
+  return new Set(likes.map((like) => like.sourceId));
+}
+
+function publicSourcesOrderBy(
+  sort: SourceSort,
+): Prisma.SourceOrderByWithRelationInput {
+  return sort === "popular"
+    ? { likes: { _count: "desc" } }
+    : { createdAt: "desc" };
+}
 
 function searchFilter(q: string): Prisma.SourceWhereInput {
   if (!q.trim()) return {};
@@ -132,14 +164,11 @@ export async function getPublicSources(
   currentUserId?: string | null,
 ): Promise<SourceListResult> {
   const where: Prisma.SourceWhereInput = {
-    visibility: "PUBLIC",
+    ...publicSourcesFilter,
     ...searchFilter(q),
   };
 
-  const orderBy: Prisma.SourceOrderByWithRelationInput =
-    sort === "popular"
-      ? { likes: { _count: "desc" } }
-      : { createdAt: "desc" };
+  const orderBy = publicSourcesOrderBy(sort);
 
   const skip = (page - 1) * PAGE_SIZE;
   const [items, total] = await Promise.all([
@@ -159,14 +188,10 @@ export async function getPublicSources(
   let likedSourceIds = new Set<string>();
 
   if (currentUserId && items.length > 0) {
-    const likes = await prisma.like.findMany({
-      where: {
-        userId: currentUserId,
-        sourceId: { in: items.map((item) => item.id) },
-      },
-      select: { sourceId: true },
-    });
-    likedSourceIds = new Set(likes.map((like) => like.sourceId));
+    likedSourceIds = await getLikedSourceIds(
+      currentUserId,
+      items.map((item) => item.id),
+    );
   }
 
   return {
@@ -180,4 +205,32 @@ export async function getPublicSources(
     pageSize: PAGE_SIZE,
     totalPages: Math.max(1, Math.ceil(total / PAGE_SIZE)),
   };
+}
+
+/** Публичная лента для главной страницы (без пагинации) */
+export async function getPublicSourcesFeed(
+  sort: SourceSort = "recent",
+  currentUserId?: string | null,
+): Promise<PublicSourceFeedItem[]> {
+  const items = await prisma.source.findMany({
+    where: publicSourcesFilter,
+    orderBy: publicSourcesOrderBy(sort),
+    include: { _count: { select: { likes: true } } },
+  });
+
+  const likedSourceIds = currentUserId
+    ? await getLikedSourceIds(
+        currentUserId,
+        items.map((item) => item.id),
+      )
+    : new Set<string>();
+
+  return items.map((source) => ({
+    id: source.id,
+    content: source.content,
+    description: source.description,
+    createdAt: source.createdAt,
+    likesCount: source._count.likes,
+    likedByMe: likedSourceIds.has(source.id),
+  }));
 }

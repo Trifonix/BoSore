@@ -1,29 +1,17 @@
-import { prisma } from "@/lib/prisma";
-import { publicSourcesFilter } from "@/lib/auth/access";
+import { auth } from "@/auth";
+import { HomePublicSources } from "@/components/HomePublicSources";
+import { getPublicSourcesFeed } from "@/lib/data/sources";
 import { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
-type SourceWithVotes = Awaited<
-  ReturnType<
-    typeof prisma.source.findMany<{
-      include: { _count: { select: { votes: true } } };
-    }>
-  >
->;
-
 export default async function HomePage() {
-  let sources: SourceWithVotes = [];
+  const session = await auth();
+  let sources: Awaited<ReturnType<typeof getPublicSourcesFeed>> = [];
   let dbError: string | null = null;
 
   try {
-    sources = await prisma.source.findMany({
-      where: publicSourcesFilter,
-      orderBy: { createdAt: "desc" },
-      include: {
-        _count: { select: { votes: true } },
-      },
-    });
+    sources = await getPublicSourcesFeed("recent", session?.user?.id ?? null);
   } catch (error) {
     dbError = getDbErrorMessage(error);
   }
@@ -69,29 +57,10 @@ export default async function HomePage() {
           <code>npm run db:verify</code> для проверки схемы.
         </p>
       ) : (
-        <ul className="list">
-          {sources.map((source) => (
-            <li key={source.id} className="item">
-              <p className="item-summary">{source.content}</p>
-              {source.description && (
-                <p className="item-gost">
-                  <span className="item-gost-label">По ГОСТ</span>
-                  {source.description}
-                </p>
-              )}
-              <time dateTime={source.createdAt.toISOString()}>
-                {source.createdAt.toLocaleDateString("ru-RU", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-                {" · "}
-                {source._count.votes}{" "}
-                {source._count.votes === 1 ? "голос" : "голосов"}
-              </time>
-            </li>
-          ))}
-        </ul>
+        <HomePublicSources
+          sources={sources}
+          isAuthenticated={!!session?.user?.id}
+        />
       )}
     </div>
   );

@@ -45,23 +45,22 @@ async function main() {
     },
   });
 
-  const vote = await prisma.vote.upsert({
+  const like = await prisma.like.upsert({
     where: {
       userId_sourceId: {
         userId: user.id,
         sourceId: source.id,
       },
     },
-    update: { value: 1 },
+    update: {},
     create: {
       userId: user.id,
       sourceId: source.id,
-      value: 1,
     },
   });
 
-  console.log("OK: тестовые данные созданы (пользователь, источник, голос)");
-  console.log({ userId: user.id, sourceId: source.id, voteId: vote.id });
+  console.log("OK: тестовые данные созданы (пользователь, источник, лайк)");
+  console.log({ userId: user.id, sourceId: source.id, likeId: like.id });
 }
 
 main()

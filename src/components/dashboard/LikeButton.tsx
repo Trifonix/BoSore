@@ -10,9 +10,15 @@ type Props = {
   sourceId: string;
   initialLiked: boolean;
   initialCount: number;
+  layout?: "stack" | "inline";
 };
 
-export function LikeButton({ sourceId, initialLiked, initialCount }: Props) {
+export function LikeButton({
+  sourceId,
+  initialLiked,
+  initialCount,
+  layout = "stack",
+}: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -70,8 +76,12 @@ export function LikeButton({ sourceId, initialLiked, initialCount }: Props) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-0.5">
-      <div className="flex items-center gap-1">
+    <div
+      className={cn(
+        layout === "inline" ? "home-like-btn" : "flex flex-col items-center gap-0.5",
+      )}
+    >
+      <div className={cn("flex items-center gap-1", layout === "inline" && "home-like-row")}>
         <Button
           type="button"
           variant="ghost"
