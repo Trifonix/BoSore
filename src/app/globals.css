@@ -420,10 +420,16 @@ body:has(.dashboard-layout-marker) .site-header-root {
   display: none;
 }
 
+body:has(.dashboard-layout-marker) {
+  overflow: hidden;
+}
+
 /* Личный кабинет — чуть светлее главной, но та же неоновая тёмная тема */
 .dashboard-shell {
   position: relative;
-  min-height: 100dvh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
   color: var(--text-primary);
   background: var(--dash-bg);
 }
@@ -445,9 +451,12 @@ body:has(.dashboard-layout-marker) .site-header-root {
   position: relative;
   z-index: 1;
   display: flex;
+  height: 100dvh;
+  min-height: 0;
   flex-direction: column;
   width: 280px;
   flex-shrink: 0;
+  overflow: hidden;
   padding: 1.5rem 1rem;
   background: rgba(14, 14, 26, 0.92);
   border-right: 1px solid var(--border-dim);
@@ -551,7 +560,10 @@ body:has(.dashboard-layout-marker) .site-header-root {
   position: relative;
   z-index: 1;
   flex: 1;
-  overflow: auto;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 2rem;
 }
 
