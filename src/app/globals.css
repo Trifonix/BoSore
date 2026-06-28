@@ -632,30 +632,25 @@ button.like-stat:disabled {
   color: var(--text-secondary);
 }
 
-.source-field-label {
-  display: block;
-  margin-bottom: 0.35rem;
-  font-family: var(--font-display), sans-serif;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--neon-cyan);
-}
-
-.source-field-gost .source-field-label {
-  color: var(--neon-magenta);
-}
-
-.source-field-text {
+.source-text-content {
   margin: 0;
   font-size: 0.92rem;
   line-height: 1.55;
-  color: var(--text-primary);
+  color: var(--neon-cyan);
 }
 
-.source-field-gost .source-field-text {
-  color: var(--text-secondary);
+.source-text-gost {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--neon-magenta);
+  text-shadow: 0 0 12px rgba(255, 45, 149, 0.25);
+}
+
+.source-detail-content.source-text-content,
+.source-detail-content.source-text-gost {
+  font-size: 1.05rem;
+  line-height: 1.65;
 }
 
 .source-card-meta {
@@ -943,6 +938,15 @@ body:has(.dashboard-layout-marker) {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.dashboard-card-preview.source-text-content {
+  color: var(--neon-cyan);
+}
+
+.dashboard-card-preview.source-text-gost {
+  color: var(--neon-magenta);
+  text-shadow: 0 0 12px rgba(255, 45, 149, 0.25);
 }
 
 .dashboard-card-meta {

@@ -71,17 +71,11 @@ export function SourceCard({
       </div>
 
       <div className="min-w-0 flex-1 space-y-2">
-        <div>
-          <p className="source-field-label mb-1">Описание</p>
-          <p className="dashboard-card-preview">{preview(local.content)}</p>
-        </div>
+        <p className="source-text-content dashboard-card-preview">{preview(local.content)}</p>
         {local.description && (
-          <div>
-            <p className="source-field-label mb-1">По ГОСТ</p>
-            <p className="dashboard-card-preview text-[var(--text-muted)]">
-              {preview(local.description, 100)}
-            </p>
-          </div>
+          <p className="source-text-gost dashboard-card-preview">
+            {preview(local.description, 100)}
+          </p>
         )}
         <p className="dashboard-card-meta">
           Автор: {isOwner ? "вы" : (local.ownerName ?? "—")} · {date}

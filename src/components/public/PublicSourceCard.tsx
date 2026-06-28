@@ -25,16 +25,10 @@ export function PublicSourceCard({ source, isAuthenticated }: Props) {
   return (
     <Card className="public-source-card">
       <CardContent className="space-y-4 pt-5">
-        <div className="source-field">
-          <span className="source-field-label">Описание</span>
-          <p className="source-field-text">{previewText(source.content)}</p>
-        </div>
+        <p className="source-text-content">{previewText(source.content)}</p>
 
         {source.description && (
-          <div className="source-field source-field-gost">
-            <span className="source-field-label">По ГОСТ</span>
-            <p className="source-field-text">{previewText(source.description, 200)}</p>
-          </div>
+          <p className="source-text-gost">{previewText(source.description, 200)}</p>
         )}
 
         <p className="source-card-meta">

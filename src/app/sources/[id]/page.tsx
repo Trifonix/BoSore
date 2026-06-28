@@ -45,16 +45,12 @@ export default async function SourcePage({ params }: PageProps) {
       </header>
 
       <article className="source-detail-body space-y-6">
-        <div className="source-field">
-          <span className="source-field-label">Описание</span>
-          <p className="source-detail-content">{source.content}</p>
-        </div>
+        <p className="source-text-content source-detail-content">{source.content}</p>
 
         {source.description && (
-          <div className="source-field source-field-gost item-gost">
-            <span className="source-field-label item-gost-label">По ГОСТ</span>
-            <p className="source-detail-content m-0">{source.description}</p>
-          </div>
+          <p className="source-text-gost source-detail-content item-gost m-0">
+            {source.description}
+          </p>
         )}
       </article>
 
