@@ -44,11 +44,11 @@ export default async function SourcePage({ params }: PageProps) {
         )}
       </header>
 
-      <article className="source-detail-body space-y-6">
+      <article className="source-detail-body flex flex-col gap-10">
         <p className="source-text-content source-detail-content">{source.content}</p>
 
         {source.description && (
-          <p className="source-text-gost source-detail-content item-gost m-0">
+          <p className="source-text-gost source-detail-content item-gost">
             {source.description}
           </p>
         )}
