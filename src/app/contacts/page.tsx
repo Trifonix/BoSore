@@ -10,6 +10,16 @@ export default function ContactsPage() {
           По вопросам работы сервиса напишите на{" "}
           <a href="mailto:hello@bosore.app">hello@bosore.app</a>.
         </p>
+        <p className="auth-text mb-0">
+          GitHub:{" "}
+          <a
+            href="https://github.com/trifonix"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            github.com/trifonix
+          </a>
+        </p>
       </div>
     </div>
   );
