@@ -12,7 +12,8 @@
     "db:seed": "prisma db seed",
     "db:verify": "tsx scripts/verify-db.ts",
     "db:studio": "prisma studio",
-    "view-db": "tsx scripts/run-view-db.ts"
+    "view-db": "tsx scripts/run-view-db.ts",
+    "favicon": "python scripts/generate_favicon.py"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
