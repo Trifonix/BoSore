@@ -1,40 +1,30 @@
 import { auth } from "@/auth";
-import { HomePublicSources } from "@/components/HomePublicSources";
-import { getPublicSourcesFeed } from "@/lib/data/sources";
+import { HomeHero } from "@/components/home/HomeHero";
+import { SourceSection } from "@/components/home/SourceSection";
+import { Separator } from "@/components/ui/separator";
+import { getHomePageSources } from "@/lib/data/sources";
 import { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const session = await auth();
-  let sources: Awaited<ReturnType<typeof getPublicSourcesFeed>> = [];
+  const userId = session?.user?.id ?? null;
+  const isAuthenticated = !!userId;
+
+  let recent: Awaited<ReturnType<typeof getHomePageSources>>["recent"] = [];
+  let popular: Awaited<ReturnType<typeof getHomePageSources>>["popular"] = [];
   let dbError: string | null = null;
 
   try {
-    sources = await getPublicSourcesFeed(session?.user?.id ?? null);
+    ({ recent, popular } = await getHomePageSources(userId));
   } catch (error) {
     dbError = getDbErrorMessage(error);
   }
 
   return (
-    <div className="page">
-      <header className="header">
-        <h1 className="logo">BoSore</h1>
-        <p className="subtitle">
-          Описания книг и статей с оформлением по ГОСТ для списка литературы
-        </p>
-        {!dbError && sources.length > 0 && (
-          <span className="badge">
-            <span className="badge-dot" />
-            {sources.length}{" "}
-            {sources.length === 1
-              ? "источник"
-              : sources.length < 5
-                ? "источника"
-                : "источников"}
-          </span>
-        )}
-      </header>
+    <div className="page home-page">
+      <HomeHero isAuthenticated={isAuthenticated} />
 
       {dbError ? (
         <p className="empty">
@@ -42,25 +32,27 @@ export default async function HomePage() {
           <br />
           <br />
           {dbError}
-          <br />
-          <br />
-          Проверьте <code>DATABASE_URL</code> в <code>.env</code>. Для Neon
-          откройте проект в{" "}
-          <a href="https://console.neon.tech" target="_blank" rel="noreferrer">
-            console.neon.tech
-          </a>{" "}
-          — база могла «уснуть» после простоя.
-        </p>
-      ) : sources.length === 0 ? (
-        <p className="empty">
-          Публичных источников пока нет. Выполните{" "}
-          <code>npm run db:verify</code> для проверки схемы.
         </p>
       ) : (
-        <HomePublicSources
-          sources={sources}
-          isAuthenticated={!!session?.user?.id}
-        />
+        <>
+          <SourceSection
+            title="Новые"
+            description="Последние опубликованные источники"
+            sources={recent}
+            isAuthenticated={isAuthenticated}
+            emptyMessage="Публичных источников пока нет"
+          />
+
+          <Separator className="my-10" />
+
+          <SourceSection
+            title="Популярные"
+            description="Источники с наибольшим числом лайков"
+            sources={popular}
+            isAuthenticated={isAuthenticated}
+            emptyMessage="Пока нет источников с лайками"
+          />
+        </>
       )}
     </div>
   );
@@ -70,10 +62,8 @@ function getDbErrorMessage(error: unknown): string {
   if (error instanceof Prisma.PrismaClientInitializationError) {
     return error.message.split("\n")[0];
   }
-
   if (error instanceof Error) {
     return error.message;
   }
-
   return "Неизвестная ошибка подключения";
 }

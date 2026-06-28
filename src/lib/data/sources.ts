@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { publicSourcesFilter } from "@/lib/auth/access";
+import { publicSourcesFilter, readableSourceFilter } from "@/lib/auth/access";
 import { PAGE_SIZE } from "@/lib/validations/source";
 import type { Prisma, Visibility } from "@prisma/client";
 
@@ -17,6 +17,7 @@ export type SourceDTO = {
   ownerName: string | null;
   likesCount?: number;
   likedByMe?: boolean;
+  tags?: { id: string; name: string }[];
 };
 
 export type SourceListResult = {
@@ -35,6 +36,55 @@ export type PublicSourceFeedItem = {
   likesCount: number;
   likedByMe: boolean;
 };
+
+export type PublicSourceCardItem = {
+  id: string;
+  title: string;
+  content: string;
+  description: string | null;
+  createdAt: Date;
+  ownerId: string;
+  ownerName: string | null;
+  tags: { id: string; name: string }[];
+  likesCount: number;
+  likedByMe: boolean;
+};
+
+export const HOME_SECTION_LIMIT = 12;
+
+const publicSourceInclude = {
+  owner: { select: { name: true } },
+  tags: { select: { id: true, name: true } },
+  _count: { select: { likes: true } },
+} as const;
+
+function mapPublicSourceCard(
+  source: {
+    id: string;
+    title: string;
+    content: string;
+    description: string | null;
+    createdAt: Date;
+    ownerId: string;
+    owner: { name: string | null };
+    tags: { id: string; name: string }[];
+    _count: { likes: number };
+  },
+  likedSourceIds: Set<string>,
+): PublicSourceCardItem {
+  return {
+    id: source.id,
+    title: source.title,
+    content: source.content,
+    description: source.description,
+    createdAt: source.createdAt,
+    ownerId: source.ownerId,
+    ownerName: source.owner.name,
+    tags: source.tags,
+    likesCount: source._count.likes,
+    likedByMe: likedSourceIds.has(source.id),
+  };
+}
 
 async function getLikedSourceIds(
   userId: string,
@@ -179,6 +229,7 @@ export async function getPublicSources(
       take: PAGE_SIZE,
       include: {
         owner: { select: { name: true } },
+        tags: { select: { id: true, name: true } },
         _count: { select: { likes: true } },
       },
     }),
@@ -199,6 +250,7 @@ export async function getPublicSources(
       ...mapSource(source),
       likesCount: source._count.likes,
       likedByMe: likedSourceIds.has(source.id),
+      tags: source.tags,
     })),
     total,
     page,
@@ -207,7 +259,57 @@ export async function getPublicSources(
   };
 }
 
-/** Публичная лента для главной страницы (сортировка по лайкам) */
+/** Две выборки для главной: новые и популярные */
+export async function getHomePageSources(
+  currentUserId?: string | null,
+  limit = HOME_SECTION_LIMIT,
+): Promise<{ recent: PublicSourceCardItem[]; popular: PublicSourceCardItem[] }> {
+  const [recentRaw, popularRaw] = await Promise.all([
+    prisma.source.findMany({
+      where: publicSourcesFilter,
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      include: publicSourceInclude,
+    }),
+    prisma.source.findMany({
+      where: publicSourcesFilter,
+      orderBy: { likes: { _count: "desc" } },
+      take: limit,
+      include: publicSourceInclude,
+    }),
+  ]);
+
+  const allIds = [...new Set([...recentRaw, ...popularRaw].map((s) => s.id))];
+  const likedSourceIds = currentUserId
+    ? await getLikedSourceIds(currentUserId, allIds)
+    : new Set<string>();
+
+  return {
+    recent: recentRaw.map((s) => mapPublicSourceCard(s, likedSourceIds)),
+    popular: popularRaw.map((s) => mapPublicSourceCard(s, likedSourceIds)),
+  };
+}
+
+/** Публичный источник по id (или свой приватный для владельца) */
+export async function getPublicSourceById(
+  sourceId: string,
+  currentUserId?: string | null,
+): Promise<PublicSourceCardItem | null> {
+  const source = await prisma.source.findFirst({
+    where: readableSourceFilter(sourceId, currentUserId),
+    include: publicSourceInclude,
+  });
+
+  if (!source) return null;
+
+  const likedSourceIds = currentUserId
+    ? await getLikedSourceIds(currentUserId, [source.id])
+    : new Set<string>();
+
+  return mapPublicSourceCard(source, likedSourceIds);
+}
+
+/** Публичная лента для главной страницы (сортировка по лайкам) — legacy */
 export async function getPublicSourcesFeed(
   currentUserId?: string | null,
 ): Promise<PublicSourceFeedItem[]> {
