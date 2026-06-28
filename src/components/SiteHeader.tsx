@@ -7,7 +7,7 @@ export async function SiteHeader() {
 
   return (
     <nav className="site-nav dashboard-hidden site-header-root">
-      <Link href="/">BoSore</Link>
+      <Link href="/">Главная</Link>
       {session?.user ? (
         <Link href="/dashboard">Кабинет</Link>
       ) : (
